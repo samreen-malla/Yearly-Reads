@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+         (request.auth.token.email == "samreen.oiai@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidBook(data) {
+      return data.keys().hasAll(['title', 'author', 'year']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.author is string && data.author.size() > 0 && data.author.size() < 100 &&
+             data.year is int && data.year >= 1800;
+    }
+
+    function isValidReview(data) {
+      return data.keys().hasAll(['userId', 'userName', 'rating', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+             (!('text' in data) || (data.text is string && data.text.size() < 5000));
+    }
+
+    function isValidShelfItem(data) {
+      return data.keys().hasAll(['status', 'updatedAt']) &&
+             data.status in ['want_to_read', 'reading', 'read', 'paused'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    request.resource.data.email == resource.data.email;
+      
+      match /shelves/{bookId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && isValidShelfItem(request.resource.data);
+      }
+    }
+
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidBook(request.resource.data);
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && isValidReview(request.resource.data);
+        allow update: if isAuthenticated() && request.auth.uid == resource.data.userId && isValidReview(request.resource.data);
+        allow delete: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      }
+    }
+
+    match /yearly_lists/{listId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

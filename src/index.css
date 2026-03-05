@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Inter:wght@100..900&display=swap');
+
+@theme {
+  --font-serif: "Merriweather", serif;
+  --font-sans: "Inter", sans-serif;
+
+  --color-brand-wood: #4A3728;
+  --color-brand-wood-light: #6D5A4B;
+  --color-brand-wood-dark: #2D1F15;
+  --color-brand-green: #A8C69F;
+  --color-brand-green-light: #CDE0C8;
+  --color-brand-green-dark: #7D9B74;
+  --color-brand-paper: #F2EBE1;
+  --color-brand-cream: #F9F5F0;
+  --color-brand-accent: #D4A373;
+  
+  --color-text-primary: #2D1F15;
+  --color-text-secondary: #5D4A3B;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-paper text-text-primary font-sans antialiased min-h-screen;
+    background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+    background-attachment: fixed;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .paper-card {
+    @apply bg-brand-cream border border-brand-wood/10 shadow-sm relative overflow-hidden;
+    background-image: url("https://www.transparenttextures.com/patterns/handmade-paper.png");
+  }
+
+  .bookshelf-btn {
+    @apply relative inline-flex items-center justify-center px-6 py-3 font-bold transition-all duration-200 
+           bg-brand-wood text-brand-paper rounded-sm shadow-[4px_4px_0px_0px_rgba(45,31,21,0.3)]
+           hover:shadow-[2px_2px_0px_0px_rgba(45,31,21,0.3)] hover:translate-x-[2px] hover:translate-y-[2px]
+           active:shadow-none active:translate-x-[4px] active:translate-y-[4px];
+    border-left: 4px solid rgba(255,255,255,0.1);
+  }
+
+  .bookshelf-btn-secondary {
+    @apply relative inline-flex items-center justify-center px-6 py-3 font-bold transition-all duration-200 
+           bg-brand-green text-brand-wood-dark rounded-sm shadow-[4px_4px_0px_0px_rgba(125,155,116,0.3)]
+           hover:shadow-[2px_2px_0px_0px_rgba(125,155,116,0.3)] hover:translate-x-[2px] hover:translate-y-[2px]
+           active:shadow-none active:translate-x-[4px] active:translate-y-[4px];
+    border-left: 4px solid rgba(0,0,0,0.05);
+  }
+}

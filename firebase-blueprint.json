@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "favoriteGenres": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "Book": {
+      "title": "Book",
+      "description": "Book metadata",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "year": { "type": "integer" },
+        "genre": { "type": "string" },
+        "description": { "type": "string" },
+        "isbn": { "type": "string" },
+        "coverUrl": { "type": "string" },
+        "avgRating": { "type": "number" },
+        "reviewCount": { "type": "integer" }
+      },
+      "required": ["title", "author", "year"]
+    },
+    "YearlyList": {
+      "title": "Yearly List",
+      "description": "Curated list of books for a specific year and category",
+      "type": "object",
+      "properties": {
+        "year": { "type": "integer" },
+        "category": { "type": "string" },
+        "bookIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["year", "category", "bookIds"]
+    },
+    "UserBookStatus": {
+      "title": "User Book Status",
+      "description": "Tracking status of a book for a specific user",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "enum": ["want_to_read", "reading", "read", "paused"] },
+        "progress": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["status", "updatedAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "User review for a book",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "integer" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "rating", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Book catalog"
+    },
+    "/yearly_lists/{listId}": {
+      "schema": "YearlyList",
+      "description": "Curated yearly collections"
+    },
+    "/users/{userId}/shelves/{bookId}": {
+      "schema": "UserBookStatus",
+      "description": "User's personal reading shelves"
+    },
+    "/books/{bookId}/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Book reviews"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "YearlyReads",
+  "description": "A book discovery and tracking platform that curates the best books of every year starting from 2010.",
+  "requestFramePermissions": []
+}
